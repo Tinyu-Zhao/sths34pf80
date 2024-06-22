@@ -43,7 +43,7 @@
 #define NOP() asm volatile ("nop")
 
 #define STHS34PF80_I2C_BUFFER_LEN_MAX	(256)
-#define STHS34PF80_BOOT_TIME			(10)
+#define STHS34PF80_BOOT_TIME_MS			(10)
 
 /* External variables --------------------------------------------------------*/
 
@@ -86,13 +86,14 @@ static void delay_ms(uint32_t period_ms);
 
 /* Exported functions definitions --------------------------------------------*/
 /**
- * @brief Function that initializes a SGP41 instance
+ * @brief Function to initialize a STHS34PF80 instance
  */
 esp_err_t sths34pf80_init(sths34pf80_t *const me,
 		i2c_master_bus_handle_t i2c_bus_handle, uint8_t dev_addr)
 {
 	ESP_LOGI(TAG, "Initializing STHS34PF80 instance...");
 
+	/* Variable to return error code */
 	esp_err_t ret = ESP_OK;
 
 	/* Add device to I2C bus */
@@ -113,7 +114,7 @@ esp_err_t sths34pf80_init(sths34pf80_t *const me,
 	me->stmdev_ctx.mdelay = delay_ms;
 
 	/* Wait for sensor boot time */
-	delay_ms(STHS34PF80_BOOT_TIME);
+	delay_ms(STHS34PF80_BOOT_TIME_MS);
 
 	/* Check device ID */
 	uint8_t whoami;
@@ -140,11 +141,25 @@ esp_err_t sths34pf80_init(sths34pf80_t *const me,
 	/* Set BDU */
 	sths34pf80_block_data_update_set(&me->stmdev_ctx, 1);
 
-	/* Set ODR */
-	delay_ms(500);
-	sths34pf80_odr_set(&me->stmdev_ctx, STHS34PF80_ODR_AT_30Hz);
-	delay_ms(1500);
+	/* Return ESP_OK */
+	return ret;
+}
 
+/**
+ * @brief Function to set the ODR (Output Data Rate)
+ */
+esp_err_t sths34pf80_set_odr(sths34pf80_t *const me, sths34pf80_odr_t val)
+{
+	/* Variable to return error code */
+	esp_err_t ret = ESP_OK;
+
+	/**/
+	if (sths34pf80_odr_set(&me->stmdev_ctx, val) != 0) {
+		ESP_LOGE(TAG, "Failed to set ODR");
+		return ESP_FAIL;
+	}
+
+	/* Return ESP_OK */
 	return ret;
 }
 

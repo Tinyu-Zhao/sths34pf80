@@ -52,16 +52,20 @@ extern "C" {
 /* Exported Macros -----------------------------------------------------------*/
 
 /* Exported typedef ----------------------------------------------------------*/
+typedef void (*sths34pf80_cb_t)(void *);
+
 typedef struct {
 	stmdev_ctx_t stmdev_ctx;
 	i2c_master_dev_handle_t i2c_dev;	/*!< I2C device handle */
+	sths34pf80_cb_t isr_cb;
+	int32_t isr_gpio;
 } sths34pf80_t;
 
 /* Exported variables --------------------------------------------------------*/
 
 /* Exported functions prototypes ---------------------------------------------*/
 /**
- * @brief Function that initialize a STHS34PF80 instance
+ * @brief Function to initialize a STHS34PF80 instance
  *
  * @param me             : Pointer to a sths34pf80_t instance
  * @param i2c_bus_handle : Handle to the I2C bus to add this device
@@ -71,6 +75,17 @@ typedef struct {
  */
 esp_err_t sths34pf80_init(sths34pf80_t *const me,
 		i2c_master_bus_handle_t i2c_bus_handle, uint8_t dev_addr);
+
+/**
+ * @brief Function to set the ODR (Output Data Rate)
+ *
+ * @param me  : Pointer to a sths34pf80_t instance
+ * @param val : ODR value, can be 0 Hz, 0.25 Hz, 0.5 Hz, 1 Hz, 2 Hz, 4 Hz, 8 Hz,
+ *              15 Hz or 30 Hz
+ *
+ * @return ESP_OK on success
+ */
+esp_err_t sths34pf80_set_odr(sths34pf80_t *const me, sths34pf80_odr_t val);
 
 #ifdef __cplusplus
 }
