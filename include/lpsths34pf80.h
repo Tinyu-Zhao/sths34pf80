@@ -46,7 +46,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "lpsths34pf80_reg.h"
+#include "sths34pf80_reg.h"
 #include "ulp_lp_core_i2c.h"
 #include "ulp_lp_core_utils.h"
 #include "ulp_lp_core_print.h"
